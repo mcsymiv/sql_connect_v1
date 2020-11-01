@@ -46,17 +46,17 @@ namespace sql_connector_v1.Steps
         [Then(@"Get a list of all Persons")]
         public void ThenGetAListOfAllPersons()
         {
-            Assert.IsFalse(dataset.Tables[0].Rows[0] != null);
+            Assert.IsTrue(dataset.Tables[0].Rows[0] != null);
         }
 
         /// <summary>
         /// Add new Person to the DB with firstName, lastName, age, city info
         /// </summary>
-        [Given(@"Person data is generated (.*) (.*) (.*) (.*)")]
-        public void GivenPersonDataIsGeneratedTestTestovichTestograd(string firstName, string lastName, int age, string city)
+        [Given(@"Person data is generated")]
+        public void GivenPersonDataIsGeneratedTestTestovichTestograd()
         {
             sqlExpression = String.Format($"insert into Persons(firstName, lastName, age, city)" +
-                    $"values('{firstName}','{lastName}',{age},'{city}')");
+                    $"values('Harry','Potter',12,'London')");
         }
 
         [When(@"Send person data to Person table")]
@@ -70,10 +70,11 @@ namespace sql_connector_v1.Steps
                 adapter.Fill(dataset);
             }
         }
-        [Then(@"Get person name")]
-        public void ThenGetPersonTest()
+
+        [Then(@"Person name is visible in table")]
+        public void ThenPersonNameIsVisibleInTable()
         {
-            sqlExpression = String.Format($"select firstName from Persons where firstName = 'firstName'");
+            sqlExpression = String.Format($"select firstName from Persons where firstName = 'Harry'");
             using (connection = new SqlConnection(connString))
             {
                 connection.Open();
@@ -81,8 +82,36 @@ namespace sql_connector_v1.Steps
                 dataset = new DataSet();
                 adapter.Fill(dataset);
             }
-            var person = dataset.Tables[0].Rows[0].ItemArray.ToString();
-            Assert.IsTrue(person.Contains("firstName"));
+            string person = Convert.ToString(dataset.Tables[0].Rows[0].ItemArray[0]);
+            Assert.IsTrue(person.Contains("Harry"));
         }
+
+        [When(@"Send delete command indicating (.*) (.*)")]
+        public void WhenSendDeleteCommandIndicating(string lastName, string firstName)
+        {
+            sqlExpression = String.Format($"delete from Persons where lastName = '{lastName}' and firstName = '{firstName}'");
+            using (connection = new SqlConnection(connString))
+            {
+                connection.Open();
+                adapter = new SqlDataAdapter(sqlExpression, connection);
+            }
+        }
+
+        [Then(@"Person is removed from DB")]
+        public void ThenPersonIsRemovedFromDB()
+        {
+            sqlExpression = String.Format($"select firstName from Persons where firstName = 'Harry' and lastName = 'Potter'");
+            using (connection = new SqlConnection(connString))
+            {
+                connection.Open();
+                adapter = new SqlDataAdapter(sqlExpression, connection);
+                dataset = new DataSet();
+                adapter.Fill(dataset);
+            }
+            int count = dataset.Tables[0].Rows.Count;
+            Assert.IsTrue(count == 0);
+        }
+
+
     }
 }

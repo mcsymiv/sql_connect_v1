@@ -10,6 +10,11 @@ Scenario: Get Persons List
 	Then Get a list of all Persons
 @add_person
 Scenario: Add new Person
-	Given Person data is generated firstName lastName age city
+	Given Person data is generated
 	When Send person data to Person table
-	Then Get person name
+	Then Person name is visible in table
+
+@remove_person
+Scenario: Remove person from list
+	When Send delete command indicating Potter Harry
+	Then Person is removed from DB
