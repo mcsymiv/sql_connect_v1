@@ -12,7 +12,7 @@ namespace sql_connector_v1.Steps
     [Binding]
     public class ManagePersonsSteps
     {
-        string connString = @"Data Source=DESKTOP-BNMTEH1\SQLEXPRESS;Initial Catalog=HW;Integrated Security=True";
+        string connString = @"Data Source=DESKTOP-BNMTEH1\SQLEXPRESS;Initial Catalog=PersonsOrders;Integrated Security=True";
         string sqlExpression;
         SqlDataAdapter adapter;
         DataSet dataset;
