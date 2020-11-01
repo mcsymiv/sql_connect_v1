@@ -14,7 +14,13 @@ Scenario: Add new Person
 	When Send person data to Person table
 	Then Person name is visible in table
 
+@write_order
+Scenario: Make a sell
+	Given Person information id
+	When Add order information
+	Then Person data is in Order table
+
 @remove_person
 Scenario: Remove person from list
-	When Send delete command indicating Potter Harry
+	When Send delete command pointing to this person
 	Then Person is removed from DB
